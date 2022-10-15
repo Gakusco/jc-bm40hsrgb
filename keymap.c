@@ -9,15 +9,10 @@
 #define _CALCULATE 4
 #define _MOV 5
 
-// Tap Dance declarations
-enum {
-    TD_LSHIFT_KCAPS,
-};
-
 // Sets the default values for the RGB LEDs.
 
 uint8_t prev = _BASE;
-uint32_t desiredmode = 25;
+uint32_t desiredmode = 31;
 uint16_t hue = 120;
 uint16_t sat = 255;
 uint16_t val = 250;
@@ -73,7 +68,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 		KC_ESC, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_BSPC, 
     KC_TAB, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_ENT,
-    TD(TD_LSHIFT_KCAPS), KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT, 
+    KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT, 
     KC_LCTL, KC_CAPS, KC_LGUI, KC_LALT, MO(1), KC_SPC, MO(2), RALT_T(KC_LEFT), KC_DOWN, KC_UP, KC_RGHT
     
 		),
@@ -128,18 +123,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
-// Tap Dance definitions
-qk_tap_dance_action_t tap_dance_actions[] = {
-    // Tap once for LSFT, twice for Caps Lock
-    [TD_LSHIFT_KCAPS] = ACTION_TAP_DANCE_DOUBLE(KC_LSFT, KC_CAPS),
-};
-
 
 // Section to change RGB LED colours and animation when activating layer 1 and 2, and then go back to the default, which I can change on the fly.
 
-uint32_t layer_state_set_user(uint32_t state) 
+layer_state_t layer_state_set_user(layer_state_t state) 
 {
-  uint8_t layer = biton32(state);
+  uint8_t layer = get_highest_layer(state);
   if (prev!=_ADJUST) {
       switch (layer) {
         case _BASE:
