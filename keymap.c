@@ -108,6 +108,8 @@ void rgb_matrix_indicators_user(void) {
     //Capslock led
     if (led_state.caps_lock) {
         rgb_matrix_set_color(37, yellow[0], yellow[1], yellow[2]);
+        rgb_matrix_set_color(5, yellow[0], yellow[1], yellow[2]);
+        rgb_matrix_set_color(6, yellow[0], yellow[1], yellow[2]);
     }
 
 }
