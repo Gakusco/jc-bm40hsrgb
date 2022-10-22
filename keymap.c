@@ -13,6 +13,7 @@
 
 uint8_t prev = _BASE;
 uint32_t desiredmode = 31;
+// uint32_t desiredmode = 0;
 uint16_t hue = 120;
 uint16_t sat = 255;
 uint16_t val = 250;
@@ -162,4 +163,16 @@ layer_state_t layer_state_set_user(layer_state_t state)
   }
   prev = layer;
   return state;
+}
+
+void rgb_matrix_indicators_user(void) {
+    uint8_t green[3] = {15, 33, 1};
+
+    led_t led_state = host_keyboard_led_state();
+
+    //Capslock led
+    if (led_state.caps_lock) {
+        rgb_matrix_set_color(37, green[0], green[1], green[2]);
+    }
+
 }
