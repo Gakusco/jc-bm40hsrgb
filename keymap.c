@@ -9,63 +9,16 @@
 #define _CALCULATE 4
 #define _MOV 5
 
-// Sets the default values for the RGB LEDs.
-
-uint8_t prev = _BASE;
-uint32_t desiredmode = 31;
-// uint32_t desiredmode = 0;
-uint16_t hue = 120;
-uint16_t sat = 255;
-uint16_t val = 250;
-
-// Does something to grab the RGB LED values to retain when switching layers.
-
-void get_hsv(void) {
-   hue = rgblight_get_hue();
-   sat = rgblight_get_sat();
-   val = rgblight_get_val();
+void keyboard_post_init_user(void) {
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+    rgb_matrix_sethsv_noeeprom(HSV_OFF);
 }
-
-void reset_hsv(void) {
-   rgblight_sethsv(hue, sat, val);
-}
-
-void matrix_init_user() {
-    rgblight_mode(desiredmode);
-   rgblight_enable();
-   reset_hsv();
-}
-
-enum custom_keycodes {
- MACRO_OO,
-};
-
-
-// Macro section
-
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-           case MACRO_OO:
-      if (record->event.pressed)
-      {
-        SEND_STRING("0_0");
-      }
-      return false;
-      break;
-        
-return false;
-    break;
-  }
-    return true;
-};
-
 
 // KEYMAPS
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
-	[0] = LAYOUT_planck_mit(
+	[_BASE] = LAYOUT_planck_mit(
 
 		KC_ESC, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_BSPC, 
     KC_TAB, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_ENT,
@@ -75,7 +28,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 		),
 
 
-	[1] = LAYOUT_planck_mit(
+	[_SYMBOLS] = LAYOUT_planck_mit(
 
 		KC_TILD, KC_EXLM, KC_AT, KC_HASH, KC_DLR, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_BSPC, 
     KC_DEL, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE,
@@ -84,7 +37,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 		),
 
 
-	[2] = LAYOUT_planck_mit(
+	[_NUMBERS] = LAYOUT_planck_mit(
 
 		KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_BSPC,
     KC_DEL, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_MINS, KC_EQL, KC_LBRC, KC_RBRC, KC_BSLS,
@@ -94,7 +47,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 		),
 
 
-	[3] = LAYOUT_planck_mit(
+	[_ADJUST] = LAYOUT_planck_mit(
 
 		KC_TRNS, RESET, DEBUG, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, LCTL(KC_LEFT), KC_UP, LCTL(KC_RGHT), RGB_VAD, KC_DEL,
     KC_LSFT, KC_LCTL, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_HOME, KC_LEFT, KC_DOWN, KC_RGHT, KC_END, KC_TRNS,
@@ -104,7 +57,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
 
-  [4] = LAYOUT_planck_mit(
+  [_CALCULATE] = LAYOUT_planck_mit(
 
     KC_ESC, LCTL(KC_LEFT), KC_UP, LCTL(KC_RGHT), LSFT(KC_1), KC_LPRN, KC_RPRN, KC_7, KC_8, KC_9, KC_PPLS, KC_BSPC,
     KC_TAB, KC_LEFT, KC_DOWN, KC_RGHT, TO(0), KC_LCBR, KC_RCBR, KC_4, KC_5, KC_6, KC_PMNS, KC_ENT,
@@ -113,7 +66,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   ),
 
-  [5] = LAYOUT_planck_mit(
+  [_MOV] = LAYOUT_planck_mit(
 
     KC_ESC, KC_INS, LCTL(KC_BSPC), LCTL(KC_DEL), KC_DEL, KC_LSFT, LCTL(KC_Z), LCTL(KC_LEFT), KC_UP, LCTL(KC_RGHT), LALT(KC_TAB), KC_BSPC,
     KC_TAB, LCTL(LGUI(KC_LEFT)), KC_ENT, KC_BSPC, TO(0), LCTL(LGUI(KC_RIGHT)), KC_HOME, KC_LEFT, KC_DOWN, KC_RGHT, KC_END, KC_ENT,
@@ -124,55 +77,37 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
-
-// Section to change RGB LED colours and animation when activating layer 1 and 2, and then go back to the default, which I can change on the fly.
-
-layer_state_t layer_state_set_user(layer_state_t state) 
-{
-  uint8_t layer = get_highest_layer(state);
-  if (prev!=_ADJUST) {
-      switch (layer) {
-        case _BASE:
-          rgblight_mode(desiredmode);
-          reset_hsv();
-          break;
-        case _NUMBERS:
-          rgblight_mode(0);
-          rgblight_sethsv(HSV_CYAN);
-          break;
-        case _SYMBOLS:
-          rgblight_mode(0);
-          rgblight_sethsv(HSV_GREEN);
-          break;  
-        case _ADJUST:
-          rgblight_mode(desiredmode);
-          reset_hsv();
-          break;
-        case _CALCULATE:
-          rgblight_mode(0);
-          rgblight_sethsv(HSV_WHITE);
-          break;
-        case _MOV:
-          rgblight_mode(0);
-          rgblight_sethsv(HSV_RED);
-          break;
-      }
-  } else {
-      desiredmode = rgblight_get_mode();
-      get_hsv();
-  }
-  prev = layer;
-  return state;
-}
-
 void rgb_matrix_indicators_user(void) {
+    uint8_t red[3] = {50, 5, 0};
+    uint8_t yellow[3] = {50, 50, 0};
+    uint8_t blue[3] = {0, 15, 50};
     uint8_t green[3] = {15, 33, 1};
+    uint8_t white[3] = {255, 255, 255};
+
+    switch (get_highest_layer(layer_state)) {
+        case _BASE:
+            break;
+        case _SYMBOLS:
+            rgb_matrix_set_color_all(green[0], green[1], green[2]);
+            break;
+        case _NUMBERS:
+            rgb_matrix_set_color_all(blue[0], blue[1], blue[2]);
+            break;
+        case _ADJUST:
+            break;
+        case _CALCULATE:
+            rgb_matrix_set_color_all(white[0], white[1], white[2]);
+            break;
+        case _MOV:
+            rgb_matrix_set_color_all(red[0], red[1], red[2]);
+            break;
+    }
 
     led_t led_state = host_keyboard_led_state();
 
     //Capslock led
     if (led_state.caps_lock) {
-        rgb_matrix_set_color(37, green[0], green[1], green[2]);
+        rgb_matrix_set_color(37, yellow[0], yellow[1], yellow[2]);
     }
 
 }
